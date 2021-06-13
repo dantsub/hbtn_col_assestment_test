@@ -1,12 +1,15 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-from api.deps import deps
 from datetime import timedelta
-from api.crud import *
+
 from api.config import *
+from api.crud import *
+from api.deps import *
+from fastapi import APIRouter, Depends, HTTPException, status
+from schemas import schemas
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-@router.post("/login", response_model=schemas.Token)
+@router.post("/", response_model=schemas.Token)
 async def login_for_access_token(db: Session = Depends(get_db),form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:

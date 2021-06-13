@@ -1,7 +1,16 @@
-from api.config import *
-from db.base import User, Post
 from datetime import datetime, timedelta
+from typing import Optional
+
+from db.base import User, Post
 from jose import JWTError, jwt
+from passlib.context import CryptContext
+from schemas import schemas
+from sqlalchemy.orm import Session
+
+from api.config import *
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -16,7 +25,7 @@ def get_user(db, username: str):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = User(username=user.username,hashed_password=get_password_hash(user.password))
+    db_user = User(username=user.username, email=user.email, hashed_password=get_password_hash(user.password))
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
